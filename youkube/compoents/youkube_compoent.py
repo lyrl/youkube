@@ -165,10 +165,16 @@ class YoukubeRepo(object):
         video.save()
 
     def find_by_url_hash(self, url_hash):
-        return model.Video.get(model.Video.url_hash == url_hash)
+        try:
+            model.Video.get(model.Video.url_hash == url_hash)
+        except:
+            return None
 
     def find_by_url(self, url):
-        return model.Video.get(model.Video.url == url)
+        try:
+            return model.Video.get(model.Video.url == url)
+        except:
+            return None
 
     def chg_status(self, video_entity, status):
         video_entity.status = status

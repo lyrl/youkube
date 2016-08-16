@@ -39,9 +39,12 @@ class YoutubeDl(object):
                     'simulate': True}  # 不进行下载操作
 
 
+
+        logger.debug("fetch_video_base_info  url : %s  " % (url))
+
         dl = youtube_dl.YoutubeDL(params)
 
-        resp  = dl.download(url)
+        resp = dl.download(url)
 
         logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
 

@@ -47,7 +47,7 @@ class Youkube(object):
         while True:
             links = self.youtube.fetch_user_page_video_links(self.config['user'])
             # 未下载的视频,添加到任务列表
-            schedule_links = [ i for i in links if not self.repo.find_by_url(i)]
+            schedule_links = [i for i in links if not self.repo.find_by_url(i)]
 
             for link in schedule_links:
                 # 视频基本信息的字典数据，信息由youtube-dl 提供

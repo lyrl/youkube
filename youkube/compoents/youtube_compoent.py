@@ -48,7 +48,7 @@ class YoutubeDl(object):
 
         resp = os.popen("youtube-dl -f best/best -j %s" % url).read()
 
-        logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
+        # logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
 
         return json.loads(resp)
 

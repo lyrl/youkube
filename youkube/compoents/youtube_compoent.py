@@ -71,7 +71,7 @@ class YoutubeDl(object):
     @staticmethod
     def download(url, video_dir, ext, video_url):
 
-        file_name = "%s/%s\.%s" % (video_dir, util.md5encode(url), ext)
+        file_name = "%s%s.%s" % (video_dir, util.md5encode(url), ext)
 
         with open(file_name, "wb") as f:
             logger.debug("Downloading %s" % file_name)

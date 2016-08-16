@@ -50,6 +50,11 @@ class YoutubeDl(object):
 
         soup = BeautifulSoup(body)
 
+        linkss = soup.findAll('a', attrs={'href': re.compile(".*")})
+
+        logger.debug("[fetch_user_page_video_links]  user page video linkss %s " , linkss)
+
+
         links = soup.findAll('a', attrs={'href': re.compile(constans.YOUTUBE_VIDEO_LINK_REGEX)})
 
 

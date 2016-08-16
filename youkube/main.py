@@ -13,5 +13,5 @@ import youkube.compoents.youkube_compoent as youkube
 
 
 if __name__ == '__main__':
-    ykb = youkube.Youkube('config.json')
+    ykb = youkube.Youkube('./config.json')
     ykb.run()

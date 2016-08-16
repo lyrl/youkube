@@ -33,8 +33,8 @@ sqlite3_file sqlite3数据库文件路
 class Youkube(object):
 
     def __init__(self, config_file_path):
-        with open(config_file_path).read() as content:
-            self.config = json.loads(content)
+        with open(config_file_path) as file:
+            self.config = json.loads(file.read())
 
         if not self.config:
             raise YoukubeException("配置文件读取失败!")

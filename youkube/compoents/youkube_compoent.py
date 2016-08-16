@@ -105,7 +105,7 @@ class Youkube(object):
 
 
     def __save_new_video_info_to_db__(self, info_dict):
-        date_time_format = '%Y-%m-%d %H:%M:%S'
+        date_time_format = '%Y%m%d'
         video = model.Video()
 
         video.url = info_dict['webpage_url']

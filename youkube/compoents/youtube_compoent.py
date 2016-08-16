@@ -52,6 +52,9 @@ class YoutubeDl(object):
 
         links = soup.findAll('a', attrs={'href': re.compile(constans.YOUTUBE_VIDEO_LINK_REGEX)})
 
+
+        logger.debug("[fetch_user_page_video_links]  user page video liks %s " , links)
+
         return links
 
     @staticmethod

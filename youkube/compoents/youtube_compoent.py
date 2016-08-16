@@ -44,6 +44,8 @@ class YoutubeDl(object):
 
     @staticmethod
     def fetch_user_page_video_links(user):
+        logger.debug("[fetch_user_page_video_links] urlopen url: %s" % (constans.YOUTUBE_USER_BASE_URL % user))
+
         body = urllib2.urlopen(constans.YOUTUBE_USER_BASE_URL % user).read()
 
         soup = BeautifulSoup(body)

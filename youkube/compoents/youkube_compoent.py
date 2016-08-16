@@ -122,7 +122,7 @@ class Youkube(object):
         video.view_count = info_dict['view_count']
         video.video_id = info_dict['id']
         video.format = info_dict['format']
-        video.filesize = info_dict['filesize']
+        video.filesize = 999999999 # info_dict['filesize']
         video.ext = info_dict['ext']
         video.thumbnail = info_dict['thumbnail']
         video.upload_date = datetime.datetime.strptime(info_dict['upload_date'], date_time_format)

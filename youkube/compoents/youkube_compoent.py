@@ -163,7 +163,6 @@ class YoukubeRepo(object):
             video (model.Video): 视频实体
         """
         video.save()
-        video.update()
 
     def update(self, video):
         """将新发布的视频信息保存到数据库

@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 # Created on 2016年8月9日13:16:54
 import json
+import os
 import re
 import urllib
 import urllib2
@@ -39,9 +40,13 @@ class YoutubeDl(object):
 
         logger.debug("fetch_video_base_info  url : %s  " % (url))
 
-        dl = youtube_dl.YoutubeDL(params)
+        # dl = youtube_dl.YoutubeDL(params)
+        #
+        # resp = dl.download([url])
+        #
+        # logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
 
-        resp = dl.download([url])
+        resp = os.popen("youtube-dl -f best/best -j %s" % url).read()
 
         logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
 

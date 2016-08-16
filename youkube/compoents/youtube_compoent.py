@@ -44,7 +44,7 @@ class YoutubeDl(object):
 
         dl = youtube_dl.YoutubeDL(params)
 
-        resp = dl.download(url)
+        resp = dl.download([url])
 
         logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
 

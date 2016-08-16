@@ -54,16 +54,16 @@ class Youkube(object):
                 info_dict = self.youtube.fetch_video_base_info(link)
                 # 将视频保存到数据库
                 video_entity = self.__save_new_video_info_to_db__(info_dict)
-                logger.debug("发现新视频 %s 时长 % 大小 %s ", (video_entity.title, video_entity.duration, video_entity.filesize))
+                logger.debug(u"发现新视频 %s 时长 % 大小 %s ", (video_entity.title, video_entity.duration, video_entity.filesize))
 
-                logger.info("视频 %s 下载任务创建成功，正在下载！" % video_entity.title)
+                logger.info(u"视频 %s 下载任务创建成功，正在下载！" % video_entity.title)
                 self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADING)
 
                 self.youtube.download(link, self.config['video_dir'], video_entity.ext, info_dict['url'])
-                logger.info("视频 %s 下载成功，准备上传！" % video_entity.title)
+                logger.info(u"视频 %s 下载成功，准备上传！" % video_entity.title)
 
 
-            logger.info("所有视频处理完成，等待10秒重新获取新视频!")
+            logger.info(u"所有视频处理完成，等待10秒重新获取新视频!")
             time.sleep(10)
 
 

@@ -35,10 +35,7 @@ class YoutubeDl(object):
     @staticmethod
     def fetch_video_base_info(url):
         params = {'format': 'best/best', # 最高画质
-                    'forcejson': True, # 返回json数据
-                    'simulate': True}  # 不进行下载操作
-
-
+                    'forcejson': True}  # 不进行下载操作
 
         logger.debug("fetch_video_base_info  url : %s  " % (url))
 
@@ -47,7 +44,6 @@ class YoutubeDl(object):
         resp = dl.download([url])
 
         logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
-
 
         return json.loads(resp)
 

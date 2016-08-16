@@ -163,6 +163,15 @@ class YoukubeRepo(object):
             video (model.Video): 视频实体
         """
         video.save()
+        video.update()
+
+    def update(self, video):
+        """将新发布的视频信息保存到数据库
+
+        Args:
+            video (model.Video): 视频实体
+        """
+        video.update()
 
     def find_by_url_hash(self, url_hash):
         try:
@@ -179,7 +188,7 @@ class YoukubeRepo(object):
     def chg_status(self, video_entity, status):
         video_entity.status = status
         video_entity.update_time = datetime.datetime.now()
-        video_entity.save()
+        video_entity.update()
 
 
 class YoukubeRepoException(Exception):

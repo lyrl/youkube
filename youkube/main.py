@@ -10,17 +10,6 @@ if path not in sys.path:
 
 import youkube.compoents.youkube_compoent as youkube
 
-class MyLogger(object):
-    def debug(self, msg):
-        print msg
-        pass
-
-    def warning(self, msg):
-        # print msg
-        pass
-
-    def error(self, msg):
-        print(msg)
 
 
 if __name__ == '__main__':

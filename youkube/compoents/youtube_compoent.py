@@ -13,7 +13,6 @@ import sys
 import youtube_dl
 from BeautifulSoup import BeautifulSoup
 import youkube.constants as constans
-import youkube.compoents.youkube_compoent as youkube
 import youkube.util as util
 
 logger = util.get_logger("YoutubeCompoent")

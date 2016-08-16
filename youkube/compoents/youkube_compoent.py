@@ -153,6 +153,9 @@ class YoukubeRepo(object):
         except Exception as e:
             raise YoukubeRepoException("数据库连接失败: " + e.message)
 
+        if not model.Video.table_exists():
+            model.Video.create_table()
+
     def save(self, video):
         """将新发布的视频信息保存到数据库
 

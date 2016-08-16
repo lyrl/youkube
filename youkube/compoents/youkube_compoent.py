@@ -50,6 +50,10 @@ class Youkube(object):
             schedule_links = [i for i in links if not self.repo.find_by_url(i)]
 
             for link in schedule_links:
+
+                if self.repo.find_by_url(link):
+                    continue
+
                 # 视频基本信息的字典数据，信息由youtube-dl 提供
                 info_dict = self.youtube.fetch_video_base_info(link)
                 # 将视频保存到数据库

@@ -122,9 +122,13 @@ class Youkube(object):
 
     def del_uploaded_video_file(self):
         uploaded_videps = self.repo.find_uploaded_video()
+        logger.debug("上传成功的视频 : %s " % (uploaded_videps))
+
         for v in uploaded_videps:
             file_paht = self.config + '/' + v.url_hash + '.' + v.ext
             is_exist = os.path.exists(file_paht)
+
+            logger.debug("检查文件 %s %s" % (file_paht, is_exist))
 
             if is_exist:
                 os.remove(file_paht)

@@ -80,7 +80,7 @@ class Youkube(object):
 
 
 
-            for link in schedule_links:
+            for link in uniquelist:
                 # 视频基本信息的字典数据，信息由youtube-dl 提供
                 info_dict = self.youtube.fetch_video_base_info(link)
                 # 将视频保存到数据库

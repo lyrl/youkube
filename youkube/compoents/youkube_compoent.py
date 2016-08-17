@@ -60,7 +60,7 @@ class Youkube(object):
             self.del_uploaded_video_file()
 
             logger.info("[Youkube] - 检查未完成上传的视频...")
-            self.retry_failed_upload_task()
+            self.retry_upload_task()
 
             logger.info("[Youkube] - 抓取最新视频...")
             self.fetch_new_videos()
@@ -110,10 +110,13 @@ class Youkube(object):
             self.repo.save(video_entity)
             self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADED)
 
+            #.....
+            self.retry_upload_task()
+            self.del_uploaded_video_file()
 
-    def retry_failed_upload_task(self):
+
+    def retry_upload_task(self):
         need_upload_video = self.repo.find_need_upload_video()
-        logger.info(u"[Youkube] - 上次运行 有 %s 视频未上传", need_upload_video.wrapped_count())
 
         for n in need_upload_video:
             n.filesize = os.path.getsize(

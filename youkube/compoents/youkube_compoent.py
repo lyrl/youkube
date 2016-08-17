@@ -125,7 +125,7 @@ class Youkube(object):
         logger.debug("上传成功的视频 : %s " % (uploaded_videps))
 
         for v in uploaded_videps:
-            file_paht = self.config + '/' + v.url_hash + '.' + v.ext
+            file_paht = self.config['video_dir'] + '/' + v.url_hash + '.' + v.ext
             is_exist = os.path.exists(file_paht)
 
             logger.debug("检查文件 %s %s" % (file_paht, is_exist))

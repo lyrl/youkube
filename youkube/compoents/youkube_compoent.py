@@ -49,25 +49,30 @@ class Youkube(object):
 
         while True:
             # 删除已经上传成功的视频，保留vps空间
+            logger.info("[Youkube] - 检查并准备删除已上传成功的视频文件...")
             self.del_uploaded_video_file()
 
             # 优先上传 上次执行失败的视频
+            logger.info("[Youkube] - 检查上次运行时候未成功上传的视频...")
             self.retry_failed_upload_task()
 
             # 抓取新的视频
+            logger.info("[Youkube] - 抓取最新视频...")
             self.fetch_new_videos()
 
-            logger.info(u"所有视频处理完成，等待10秒重新获取新视频!")
-            time.sleep(10)
+            logger.info(u"[Youkube] - 所有视频处理完成，等待1分钟重新获取新视频!")
+            time.sleep(60)
 
     def fetch_new_videos(self):
         links = self.youtube.fetch_user_page_video_links(self.config['user'])
         # 未下载的视频,添加到任务列表
         schedule_links = [i for i in links if not self.repo.find_by_url(i)]
         uniquelist = []
+
         for i in schedule_links:
             if i not in uniquelist:
                 uniquelist.append(i)
+
         for link in uniquelist:
             # 视频基本信息的字典数据，信息由youtube-dl 提供
             info_dict = self.youtube.fetch_video_base_info(link)
@@ -101,12 +106,14 @@ class Youkube(object):
 
     def retry_failed_upload_task(self):
         need_upload_video = self.repo.find_need_upload_video()
+        logger.info(u"[Youkube] - 上次运行 有 %s 视频未上传", need_upload_video.wrapped_count())
+
         for n in need_upload_video:
             n.filesize = os.path.getsize(
                 "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext))
             self.repo.save(n)
 
-            logger.info(u"视频 %s 开始上传！" % n.title)
+            logger.info(u"[Youkube] - 视频 %s 开始上传！" % n.title)
             self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADING)
 
             try:
@@ -114,24 +121,24 @@ class Youkube(object):
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
                     'Greatscott - ' + n.title, u"数字电路，模拟电路", "")
             except Exception:
-                logger.warn(u"视频上传失败!")
+                logger.warn(u"[Youkube] - 视频上传失败!")
                 continue
 
-            logger.info(u"视频 %s 上传完成！" % n.title)
+            logger.info(u"[Youkube] - 视频 %s 上传完成！" % n.title)
             self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADED)
 
     def del_uploaded_video_file(self):
         uploaded_videps = self.repo.find_uploaded_video()
-        logger.debug(u"上传成功的视频 : %s " % (uploaded_videps))
 
         for v in uploaded_videps:
             file_paht = self.config['video_dir'] + '/' + v.url_hash + '.' + v.ext
             is_exist = os.path.exists(file_paht)
 
-            logger.debug(u"检查文件 %s %s" % (file_paht, is_exist))
-
             if is_exist:
+                logger.info(u"[Youkube] - 视频 %s 已上传成功 ! 视频文件 %s 准备删除!", (v.title, file_paht))
                 os.remove(file_paht)
+                logger.info(u"[Youkube] - 视频 %s  视频文件 %s 删除成功!", (v.title, file_paht))
+
 
     def __save_new_video_info_to_db__(self, info_dict):
         date_time_format = '%Y%m%d'
@@ -220,7 +227,7 @@ class YoukubeRepo(object):
         video_entity.save()
 
     def find_need_upload_video(self):
-        return model.Video.select().where(model.Video.status >= 2 and model.Video.status <= 4)
+        return model.Video.select().where(model.Video.status >= 3 and model.Video.status <= 5)
 
     def find_uploaded_video(self):
         return model.Video.select().where(model.Video.status == 6)

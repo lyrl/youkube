@@ -37,18 +37,25 @@ class YoutubeDl(object):
     def fetch_video_base_info(url):
         # params = {'format': 'best/best', # 最高画质
         #             'forcejson': True}  # 不进行下载操作
-        logger.debug("fetch_video_base_info  url : %s  " % (url))
         resp = os.popen("youtube-dl -f best/best -j %s" % url).read()
-        return json.loads(resp)
+
+        try:
+            respdict = json.loads(resp)
+        except Exception as e:
+            logger.error(u"[YoutubeDl] - can not pase as json, resp = %s  exception = %s" % (resp, e.message))
+            raise YoutubeDlException(u"视频信息返回错误 无法将其转为json 对象:")
+
+        return respdict
 
     @staticmethod
     def fetch_user_page_video_links(user):
-        logger.debug("[fetch_user_page_video_links] urlopen url: %s" % (constans.YOUTUBE_USER_BASE_URL % user))
+        """
+        获取用户主页所有视频的连接
+        """
+        logger.debug("[YoutubeDl] - user home page url: %s" % (constans.YOUTUBE_USER_BASE_URL % user))
 
         body = urllib2.urlopen(constans.YOUTUBE_USER_BASE_URL % user).read()
-
         soup = BeautifulSoup(body)
-
         links = soup.findAll('a', attrs={'href': re.compile(constans.YOUTUBE_VIDEO_LINK_REGEX)})
 
         urls = []
@@ -57,6 +64,7 @@ class YoutubeDl(object):
             urls.append(constans.YOUTUBE_BASE_URL + i['href'])
 
         return urls
+
     @staticmethod
     def download(url, video_dir, ext, video_url):
 
@@ -95,18 +103,6 @@ class YoutubeDl(object):
 
                 logger.debug("Download Complete Elapsed %sM%sS" % (
                 (time.time() - start_time) / 60, (time.time() - start_time) % 60))
-
-
-        # params = {'format': 'best/best',  # 最高画质
-        #           'progress_hooks': [download_progress_hook],
-        #           'logger': DownloaderLogger(),
-        #           'outtmpl': video_dir + '/' + util.md5encode(util) + '.' + ext
-        #           }
-        #
-        # dl = youtube_dl.YoutubeDL(params)
-
-        # dl.download(url)
-
 
 def formatDownloadSpeed(dl, start_time):
     now = time.time()

@@ -70,11 +70,11 @@ class Youkube(object):
                 logger.info(u"视频 %s 下载成功，准备上传！" % video_entity.title)
 
                 video_entity.filesize = os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext))
-                self.repo.update(video_entity)
+                self.repo.save(video_entity)
 
                 logger.info(u"视频 %s 开始上传！" % video_entity.title)
                 self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADING)
-                self.youku.upload(os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext)), video_entity.title,  u"数字电路，模拟电路", "")
+                self.youku.upload( "%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext), video_entity.title,  u"数字电路，模拟电路", "")
 
                 logger.info(u"视频 %s 上传完成！" % video_entity.title)
                 self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADED)
@@ -206,7 +206,7 @@ class YoukubeRepo(object):
     def chg_status(self, video_entity, status):
         video_entity.status = status
         video_entity.update_time = datetime.datetime.now()
-        video_entity.update()
+        video_entity.save()
 
 
 class YoukubeRepoException(Exception):

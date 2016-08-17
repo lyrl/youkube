@@ -31,6 +31,11 @@ class Video(BaseModel):
     ext = peewee.CharField()                 # 视频拓展名/后缀
     upload_date = peewee.DateTimeField()     # 上传时间
 
+    user = peewee.CharField()                # 用户名
+    channel_name = peewee.CharField()        # 频道名
+    youku_prefix = peewee.CharField()        # youku 上传视频前缀
+    desc = peewee.CharField()                # youku  视频描述
+
     create_time = peewee.DateTimeField()
     update_time = peewee.DateTimeField()
 

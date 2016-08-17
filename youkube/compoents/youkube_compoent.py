@@ -22,12 +22,20 @@ user youtube要订阅的用户
 video_dir 视频文件保存路径
 thumbnail_dir 视频缩略图/封面图保存路径
 sqlite3_file sqlite3数据库文件路
+youku_client_id  优酷client id
+youku_access_token  优酷access_token
+
 
 {
-  "user": "greateScoot",
+  "users": [
+        {"user":"greatscottlab", "channel_name": "GreateScoot", "youku_prefix": "GreateScoot - ", "desc": "模拟电路数字电路"},
+        {"user":"DarduinMyMenlon", "channel_name": "Dota2 WTF", "youku_prefix" : "", "desc" : "Dota2 Wtf"}
+    ],
   "video_dir": "/root/video",
   "thumbnail_dir": "/root/thumbnail",
-  "sqlite3_file": "/root/sqlite3.db"
+  "sqlite3_file": "/root/sqlite3.db",
+  "youku_client_id": "97c24e4be2c1383a",
+  "youku_access_token": "a1a718a2d25943a12002802877622961"
 }
 """
 
@@ -43,20 +51,17 @@ class Youkube(object):
 
         self.repo = YoukubeRepo(self.config['sqlite3_file'])
         self.youtube = youtube.YoutubeCompoentImpl()
-        self.youku = youkucom.Youku(constants.YOUKU_CLIENT_ID, constants.YOUKU_ACCESS_TOKEN)
+        self.youku = youkucom.Youku(self.config['youku_client_id'], self.config['youku_access_token'])
 
     def run(self):
 
         while True:
-            # 删除已经上传成功的视频，保留vps空间
             logger.info("[Youkube] - 检查并准备删除已上传成功的视频文件...")
             self.del_uploaded_video_file()
 
-            # 优先上传 上次执行失败的视频
-            logger.info("[Youkube] - 检查上次运行时候未成功上传的视频...")
+            logger.info("[Youkube] - 检查未完成上传的视频...")
             self.retry_failed_upload_task()
 
-            # 抓取新的视频
             logger.info("[Youkube] - 抓取最新视频...")
             self.fetch_new_videos()
 
@@ -64,20 +69,33 @@ class Youkube(object):
             time.sleep(60)
 
     def fetch_new_videos(self):
-        links = self.youtube.fetch_user_page_video_links(self.config['user'])
-        # 未下载的视频,添加到任务列表
-        schedule_links = [i for i in links if not self.repo.find_by_url(i)]
-        uniquelist = []
+        for i in self.config['users']:
+            links = self.youtube.fetch_user_page_video_links(i['user'])
+            self.fetch_new_video(self.rm_dup_link(links))
 
-        for i in schedule_links:
+    def rm_dup_link(self, links):
+        uniquelist = []
+        for i in links:
             if i not in uniquelist:
                 uniquelist.append(i)
+
+        return uniquelist
+
+    def fetch_new_video(self,  uniquelist, use_info):
+        """
+         {
+         "user":"greatscottlab",
+          "channel_name": "GreateScoot",
+          "youku_prefix": "GreateScoot - ",
+          "desc": "模拟电路数字电路"},
+
+        """
 
         for link in uniquelist:
             # 视频基本信息的字典数据，信息由youtube-dl 提供
             info_dict = self.youtube.fetch_video_base_info(link)
             # 将视频保存到数据库
-            video_entity = self.__save_new_video_info_to_db__(info_dict)
+            video_entity = self.__save_new_video_info_to_db__(info_dict, use_info)
             logger.debug(u"发现新视频 %s 时长 %s " % (video_entity.title, video_entity.duration))
 
             logger.info(u"视频 %s 下载任务创建成功，正在下载！" % video_entity.title)
@@ -89,20 +107,8 @@ class Youkube(object):
             video_entity.filesize = os.path.getsize(
                 "%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext))
             self.repo.save(video_entity)
+            self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADED)
 
-            logger.info(u"视频 %s 开始上传！" % video_entity.title)
-            self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADING)
-
-            try:
-                self.youku.upload(
-                    "%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext),
-                    'Greatscott - ' + video_entity.title, u"数字电路，模拟电路", "")
-            except Exception:
-                logger.warn(u"视频上传失败!")
-                continue
-
-            logger.info(u"视频 %s 上传完成！" % video_entity.title)
-            self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADED)
 
     def retry_failed_upload_task(self):
         need_upload_video = self.repo.find_need_upload_video()
@@ -119,7 +125,7 @@ class Youkube(object):
             try:
                 self.youku.upload(
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
-                    'Greatscott - ' + n.title, u"数字电路，模拟电路", "")
+                    n.youku_prefix + n.title, n.desc, "")
             except Exception:
                 logger.warn(u"[Youkube] - 视频上传失败!")
                 continue
@@ -140,7 +146,17 @@ class Youkube(object):
                 logger.info(u"[Youkube] - 视频 %s  视频文件 %s 删除成功!", (v.title, file_paht))
 
 
-    def __save_new_video_info_to_db__(self, info_dict):
+    def __save_new_video_info_to_db__(self, info_dict, user_info):
+
+        """
+         {
+         "user":"greatscottlab",
+          "channel_name": "GreateScoot",
+          "youku_prefix": "GreateScoot - ",
+          "desc": "模拟电路数字电路"},
+
+        """
+
         date_time_format = '%Y%m%d'
         video = model.Video()
 
@@ -158,12 +174,17 @@ class Youkube(object):
         video.view_count = info_dict['view_count']
         video.video_id = info_dict['id']
         video.format = info_dict['format']
-        video.filesize = 999999999 # info_dict['filesize']
+        video.filesize = 0 # info_dict['filesize']
         video.ext = info_dict['ext']
         video.thumbnail = info_dict['thumbnail']
         video.upload_date = datetime.datetime.strptime(info_dict['upload_date'], date_time_format)
         video.create_time = datetime.datetime.now()
         video.update_time = datetime.datetime.now()
+
+        video.user = user_info['user']
+        video.channel_name = user_info['channel_name']
+        video.youku_prefix = user_info['youku_prefix']
+        video.desc = user_info['desc']
 
         self.repo.save(video)
 

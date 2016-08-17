@@ -17,3 +17,6 @@ YOUTUBE_USER_BASE_URL = "https://www.youtube.com/user/%s/videos"
 YOUTUBE_VIDEO_LINK_REGEX = '/watch\?v=\w+$'
 YOUTUBE_BASE_URL = "https://www.youtube.com"
 
+YOUKU_CLIENT_ID = '97c24e4be2c1383a'
+YOUKU_ACCESS_TOKEN = 'a1a718a2d25943a12002802877622961'
+

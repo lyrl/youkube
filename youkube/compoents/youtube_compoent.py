@@ -35,21 +35,10 @@ class YoutubeDl(object):
 
     @staticmethod
     def fetch_video_base_info(url):
-        params = {'format': 'best/best', # 最高画质
-                    'forcejson': True}  # 不进行下载操作
-
+        # params = {'format': 'best/best', # 最高画质
+        #             'forcejson': True}  # 不进行下载操作
         logger.debug("fetch_video_base_info  url : %s  " % (url))
-
-        # dl = youtube_dl.YoutubeDL(params)
-        #
-        # resp = dl.download([url])
-        #
-        # logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
-
         resp = os.popen("youtube-dl -f best/best -j %s" % url).read()
-
-        # logger.debug("fetch_video_base_info  url : %s  resp : %s" % (url, resp))
-
         return json.loads(resp)
 
     @staticmethod

@@ -3,12 +3,14 @@
 # Created on 2016年8月9日13:16:54
 import datetime
 import json
+import os
 
 import youkube.compoents.model as model
 import youkube.compoents.youtube_compoent as youtube
 import youkube.util as util
 import time
 import youkube.constants as constants
+import youkube.compoents.youku_compoent as youkucom
 
 logger = util.get_logger('Youkube')
 
@@ -41,6 +43,7 @@ class Youkube(object):
 
         self.repo = YoukubeRepo(self.config['sqlite3_file'])
         self.youtube = youtube.YoutubeCompoentImpl()
+        self.youku = youkucom.Youku(constants.YOUKU_CLIENT_ID, constants.YOUKU_ACCESS_TOKEN)
 
     def run(self):
 
@@ -65,6 +68,18 @@ class Youkube(object):
 
                 self.youtube.download(link, self.config['video_dir'], video_entity.ext, info_dict['url'])
                 logger.info(u"视频 %s 下载成功，准备上传！" % video_entity.title)
+
+                video_entity.filesize = os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext))
+                self.repo.update(video_entity)
+
+                logger.info(u"视频 %s 开始上传！" % video_entity.title)
+                self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADING)
+                self.youku.upload(os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext)), video_entity.title, "" , u"数字电路，模拟电路")
+
+                logger.info(u"视频 %s 上传完成！" % video_entity.title)
+                self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADED)
+
+
 
 
             logger.info(u"所有视频处理完成，等待10秒重新获取新视频!")

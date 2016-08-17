@@ -71,7 +71,7 @@ class Youkube(object):
     def fetch_new_videos(self):
         for i in self.config['users']:
             links = self.youtube.fetch_user_page_video_links(i['user'])
-            self.fetch_new_video(self.rm_dup_link(links))
+            self.fetch_new_video(self.rm_dup_link(links),i)
 
     def rm_dup_link(self, links):
         uniquelist = []

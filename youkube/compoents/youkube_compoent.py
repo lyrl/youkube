@@ -55,13 +55,13 @@ class Youkube(object):
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext))
                 self.repo.save(n)
 
-                logger.info(u"视频 %s 开始上传！" % video_entity.title)
+                logger.info(u"视频 %s 开始上传！" % n.title)
                 self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADING)
 
                 try:
                     self.youku.upload(
                         "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
-                        'Greatscott - ' + video_entity.title, u"数字电路，模拟电路", "")
+                        'Greatscott - ' + n.title, u"数字电路，模拟电路", "")
                 except Exception:
                     logger.warn(u"视频上传失败!")
                     continue

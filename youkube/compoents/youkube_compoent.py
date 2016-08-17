@@ -48,112 +48,86 @@ class Youkube(object):
     def run(self):
 
         while True:
-            # 下载完成但是未上传成功的视频
-            need_upload_video = self.repo.find_need_upload_video()
-            for n in need_upload_video:
-                n.filesize = os.path.getsize(
-                    "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext))
-                self.repo.save(n)
+            # 删除已经上传成功的视频，保留vps空间
+            self.del_uploaded_video_file()
 
-                logger.info(u"视频 %s 开始上传！" % n.title)
-                self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADING)
+            # 优先上传 上次执行失败的视频
+            self.retry_failed_upload_task()
 
-                try:
-                    self.youku.upload(
-                        "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
-                        'Greatscott - ' + n.title, u"数字电路，模拟电路", "")
-                except Exception:
-                    logger.warn(u"视频上传失败!")
-                    continue
-
-                logger.info(u"视频 %s 上传完成！" % n.title)
-                self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADED)
-
-
-
-
-            links = self.youtube.fetch_user_page_video_links(self.config['user'])
-            # 未下载的视频,添加到任务列表
-            schedule_links = [i for i in links if not self.repo.find_by_url(i)]
-            uniquelist = []
-
-            for i in schedule_links:
-                if i not in uniquelist:
-                    uniquelist.append(i)
-
-
-
-            for link in uniquelist:
-                # 视频基本信息的字典数据，信息由youtube-dl 提供
-                info_dict = self.youtube.fetch_video_base_info(link)
-                # 将视频保存到数据库
-                video_entity = self.__save_new_video_info_to_db__(info_dict)
-                logger.debug(u"发现新视频 %s 时长 %s " % (video_entity.title, video_entity.duration))
-
-                logger.info(u"视频 %s 下载任务创建成功，正在下载！" % video_entity.title)
-                self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADING)
-
-                self.youtube.download(link, self.config['video_dir'], video_entity.ext, info_dict['url'])
-                logger.info(u"视频 %s 下载成功，准备上传！" % video_entity.title)
-
-                video_entity.filesize = os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext))
-                self.repo.save(video_entity)
-
-                logger.info(u"视频 %s 开始上传！" % video_entity.title)
-                self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADING)
-
-                try:
-                    self.youku.upload("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext),'Greatscott - ' +  video_entity.title,  u"数字电路，模拟电路", "")
-                except Exception:
-                    logger.warn(u"视频上传失败!")
-                    continue
-
-                logger.info(u"视频 %s 上传完成！" % video_entity.title)
-                self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADED)
-
-
-
+            # 抓取新的视频
+            self.fetch_new_videos()
 
             logger.info(u"所有视频处理完成，等待10秒重新获取新视频!")
             time.sleep(10)
 
+    def fetch_new_videos(self):
+        links = self.youtube.fetch_user_page_video_links(self.config['user'])
+        # 未下载的视频,添加到任务列表
+        schedule_links = [i for i in links if not self.repo.find_by_url(i)]
+        uniquelist = []
+        for i in schedule_links:
+            if i not in uniquelist:
+                uniquelist.append(i)
+        for link in uniquelist:
+            # 视频基本信息的字典数据，信息由youtube-dl 提供
+            info_dict = self.youtube.fetch_video_base_info(link)
+            # 将视频保存到数据库
+            video_entity = self.__save_new_video_info_to_db__(info_dict)
+            logger.debug(u"发现新视频 %s 时长 %s " % (video_entity.title, video_entity.duration))
 
+            logger.info(u"视频 %s 下载任务创建成功，正在下载！" % video_entity.title)
+            self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADING)
 
+            self.youtube.download(link, self.config['video_dir'], video_entity.ext, info_dict['url'])
+            logger.info(u"视频 %s 下载成功，准备上传！" % video_entity.title)
 
+            video_entity.filesize = os.path.getsize(
+                "%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext))
+            self.repo.save(video_entity)
 
+            logger.info(u"视频 %s 开始上传！" % video_entity.title)
+            self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADING)
 
+            try:
+                self.youku.upload(
+                    "%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext),
+                    'Greatscott - ' + video_entity.title, u"数字电路，模拟电路", "")
+            except Exception:
+                logger.warn(u"视频上传失败!")
+                continue
 
+            logger.info(u"视频 %s 上传完成！" % video_entity.title)
+            self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADED)
 
+    def retry_failed_upload_task(self):
+        need_upload_video = self.repo.find_need_upload_video()
+        for n in need_upload_video:
+            n.filesize = os.path.getsize(
+                "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext))
+            self.repo.save(n)
 
+            logger.info(u"视频 %s 开始上传！" % n.title)
+            self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADING)
 
+            try:
+                self.youku.upload(
+                    "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
+                    'Greatscott - ' + n.title, u"数字电路，模拟电路", "")
+            except Exception:
+                logger.warn(u"视频上传失败!")
+                continue
 
+            logger.info(u"视频 %s 上传完成！" % n.title)
+            self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADED)
 
+    def del_uploaded_video_file(self):
+        uploaded_videps = self.repo.find_uploaded_video()
+        for v in uploaded_videps:
+            file_paht = self.config + '/' + v.url_hash + '.' + v.ext
+            is_exist = os.path.exists(file_paht)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            if is_exist:
+                os.remove(file_paht)
 
     def __save_new_video_info_to_db__(self, info_dict):
         date_time_format = '%Y%m%d'
@@ -183,6 +157,7 @@ class Youkube(object):
         self.repo.save(video)
 
         return video
+
 
 
 class YoukubeRepo(object):
@@ -242,6 +217,9 @@ class YoukubeRepo(object):
 
     def find_need_upload_video(self):
         return model.Video.select().where(model.Video.status >= 2 and model.Video.status <= 4)
+
+    def find_uploaded_video(self):
+        return model.Video.select().where(model.Video.status == 6)
 
 
 class YoukubeRepoException(Exception):

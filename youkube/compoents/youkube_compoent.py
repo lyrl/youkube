@@ -51,7 +51,7 @@ class Youkube(object):
             # 下载完成但是未上传成功的视频
             need_upload_video = self.repo.find_need_upload_video()
             for n in need_upload_video:
-                video_entity.filesize = os.path.getsize(
+                n.filesize = os.path.getsize(
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext))
                 self.repo.save(n)
 

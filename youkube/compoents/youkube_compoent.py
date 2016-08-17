@@ -48,15 +48,6 @@ class Youkube(object):
     def run(self):
 
         while True:
-            links = self.youtube.fetch_user_page_video_links(self.config['user'])
-            # 未下载的视频,添加到任务列表
-            schedule_links = [i for i in links if not self.repo.find_by_url(i)]
-            uniquelist = []
-
-            for i in schedule_links:
-                if i not in uniquelist:
-                    uniquelist.append(i)
-
             # 下载完成但是未上传成功的视频
             need_upload_video = self.repo.find_need_upload_video()
             for n in need_upload_video:
@@ -77,6 +68,18 @@ class Youkube(object):
 
                 logger.info(u"视频 %s 上传完成！" % n.title)
                 self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADED)
+
+
+
+
+            links = self.youtube.fetch_user_page_video_links(self.config['user'])
+            # 未下载的视频,添加到任务列表
+            schedule_links = [i for i in links if not self.repo.find_by_url(i)]
+            uniquelist = []
+
+            for i in schedule_links:
+                if i not in uniquelist:
+                    uniquelist.append(i)
 
 
 

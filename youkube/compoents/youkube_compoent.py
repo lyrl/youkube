@@ -181,7 +181,12 @@ class Youkube(object):
         video.filesize = 0 # info_dict['filesize']
         video.ext = info_dict['ext']
         video.thumbnail = info_dict['thumbnail']
-        video.upload_date = datetime.datetime.strptime(info_dict['upload_date'], date_time_format)
+        try:
+            video.upload_date = datetime.datetime.strptime(info_dict['upload_date'], date_time_format)
+        except Exception:
+            video.upload_date = datetime.datetime.now()
+
+
         video.create_time = datetime.datetime.now()
         video.update_time = datetime.datetime.now()
 

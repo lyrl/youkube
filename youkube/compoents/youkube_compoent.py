@@ -74,7 +74,7 @@ class Youkube(object):
 
                 logger.info(u"视频 %s 开始上传！" % video_entity.title)
                 self.repo.chg_status(video_entity, constants.VIDEO_STATUS_UPLOADING)
-                self.youku.upload(os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext)), video_entity.title, "" , u"数字电路，模拟电路")
+                self.youku.upload(os.path.getsize("%s%s.%s" % (self.config['video_dir'], util.md5encode(video_entity.url), video_entity.ext)), video_entity.title,  u"数字电路，模拟电路", "")
 
                 logger.info(u"视频 %s 上传完成！" % video_entity.title)
                 self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADED)

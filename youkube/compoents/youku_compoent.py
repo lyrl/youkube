@@ -2,6 +2,9 @@
 # -*- encoding: utf-8 -*-
 # Created on 2016年8月9日13:16:54
 import youku
+import youkube.util as util
+
+logger = util.get_logger("YOUKU")
 
 
 class Youku(object):
@@ -21,6 +24,8 @@ class Youku(object):
             'tags': tags,
             'description': description
         }
+
+        logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))
 
         youku_upload = youku.YoukuUpload(self.client_id, self.access_token, file_path)
         youku_upload.upload(file_info)

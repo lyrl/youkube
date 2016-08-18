@@ -49,7 +49,7 @@ class Youku(object):
             'title': title,
             'tags': tags,
             'description': description,
-            'category': category
+            'category': category['label']
         }
 
         logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))

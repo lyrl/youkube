@@ -10,19 +10,19 @@ logger = util.get_logger("YOUKU")
 
 
 categorys = {
-    "游戏": {
+    u"游戏": {
         "id": 99,
         "term": "Games",
         "label": "游戏",
         "lang": "zh_CN"
     },
-    "科技": {
+    u"科技": {
         "id": 105,
         "term": "Tech",
         "label": "科技",
         "lang": "zh_CN"
     },
-    "搞笑": {
+    u"搞笑": {
         "id": 94,
         "term": "Humor",
         "label": "搞笑",
@@ -44,7 +44,7 @@ class Youku(object):
         """
         c = None
         try:
-            c = categorys[category]
+            c = categorys[category.decode('utf-8')]
         except Exception:
             logger.error("categorys[category] exception " )
             pass

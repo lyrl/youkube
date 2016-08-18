@@ -42,14 +42,13 @@ class Youku(object):
         self.client_id = client_id
         self.access_token = access_token
 
-
     def upload(self, file_path, title, tags, description, category):
         """
         上传
 
         """
 
-        logger.info("category id : %s" % find_category(category))
+        logger.info("category %s  category id : %s" % (category,find_category(category)))
 
         file_info = {
             'title': title,

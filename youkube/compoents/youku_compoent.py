@@ -48,8 +48,8 @@ class Youku(object):
         上传
 
         """
-        find_category(category)
 
+        logger.info("category id : %s" % find_category(category))
 
         file_info = {
             'title': title,

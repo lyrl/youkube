@@ -41,15 +41,15 @@ class Youku(object):
 
         """
         try:
-            text_category = json.dumps(categorys[category])
+            category = categorys[category]
         except Exception:
-            text_category = ''
+            pass
 
         file_info = {
             'title': title,
             'tags': tags,
             'description': description,
-            'category': text_category
+            'category': category
         }
 
         logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))

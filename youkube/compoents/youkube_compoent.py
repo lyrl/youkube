@@ -30,6 +30,9 @@ youku_access_token  优酷access_token
   "users": [
         {"user":"greatscottlab", "channel_name": "GreateScoot", "youku_prefix": "GreateScoot - ", "desc": "模拟电路数字电路", "category": "科技"},
         {"user":"DarduinMyMenlon", "channel_name": "Dota2 WTF", "youku_prefix" : "", "desc" : "Dota2 Wtf", "category": "游戏"}
+
+
+                {"user":"Larva2011ani", "channel_name": "Larva ", "youku_prefix" : "Larva - ", "desc" : "红虫黄虫", "category": "搞笑"}
     ],
   "video_dir": "/root/video",
   "thumbnail_dir": "/root/thumbnail",
@@ -131,8 +134,8 @@ class Youkube(object):
                 self.youku.upload(
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
                     n.youku_prefix + n.title, "", n.desc, n.category)
-            except Exception:
-                logger.warn(u"[Youkube] - 视频上传失败!")
+            except Exception as e:
+                logger.warn(u"[Youkube] - 视频上传失败!" + e.message)
                 continue
 
             logger.info(u"[Youkube] - 视频 %s 上传完成！" % n.title)

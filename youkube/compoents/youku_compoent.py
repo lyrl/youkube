@@ -13,25 +13,26 @@ categorys = [
      {
         "id": 99,
         "term": "Games",
-        "label": "游戏",
+        "label": u"游戏",
         "lang": "zh_CN"
     },
     {
         "id": 105,
         "term": "Tech",
-        "label": "科技",
+        "label": u"科技",
         "lang": "zh_CN"
     },
     {
         "id": 94,
         "term": "Humor",
-        "label": "搞笑",
+        "label": u"搞笑",
         "lang": "zh_CN"
     }
 ]
 
 def find_category(desc):
     for i in categorys:
+        logger.info(i)
         if i['label'] == desc:
             return i['id']
     return ''

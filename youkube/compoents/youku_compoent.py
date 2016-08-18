@@ -44,7 +44,7 @@ class Youku(object):
         """
         c = None
         try:
-            c = categorys[category.decode('utf-8')]
+            c = categorys[category.encode('utf-8')]
         except Exception:
             logger.error("categorys[category] exception " )
             pass

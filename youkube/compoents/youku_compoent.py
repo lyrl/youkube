@@ -54,7 +54,7 @@ class Youku(object):
             'title': title,
             'tags': category,
             'description': description,
-            'category': str(find_category(category))
+            'category': category
         }
 
         logger.debug("YOUKU - file_path %s title %s tags %s description %s title length:%s" % (file_path, title, tags, description, len(title)))

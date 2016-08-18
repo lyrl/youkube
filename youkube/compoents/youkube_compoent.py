@@ -135,7 +135,7 @@ class Youkube(object):
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
                     n.youku_prefix + n.title, "", n.desc, n.category)
             except Exception as e:
-                logger.warn(u"[Youkube] - 视频上传失败!" + json.dumps(e))
+                logger.warn(u"[Youkube] - 视频上传失败! : " + e.__str__())
                 continue
 
             logger.info(u"[Youkube] - 视频 %s 上传完成！" % n.title)

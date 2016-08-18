@@ -28,8 +28,8 @@ youku_access_token  优酷access_token
 
 {
   "users": [
-        {"user":"greatscottlab", "channel_name": "GreateScoot", "youku_prefix": "GreateScoot - ", "desc": "模拟电路数字电路"},
-        {"user":"DarduinMyMenlon", "channel_name": "Dota2 WTF", "youku_prefix" : "", "desc" : "Dota2 Wtf"}
+        {"user":"greatscottlab", "channel_name": "GreateScoot", "youku_prefix": "GreateScoot - ", "desc": "模拟电路数字电路", "category": "科技"},
+        {"user":"DarduinMyMenlon", "channel_name": "Dota2 WTF", "youku_prefix" : "", "desc" : "Dota2 Wtf", "category": "游戏"}
     ],
   "video_dir": "/root/video",
   "thumbnail_dir": "/root/thumbnail",
@@ -88,7 +88,9 @@ class Youkube(object):
          "user":"greatscottlab",
           "channel_name": "GreateScoot",
           "youku_prefix": "GreateScoot - ",
-          "desc": "模拟电路数字电路"},
+          "desc": "模拟电路数字电路",
+          "category": "科技"
+        }
 
         """
 
@@ -110,7 +112,6 @@ class Youkube(object):
             self.repo.save(video_entity)
             self.repo.chg_status(video_entity, constants.VIDEO_STATUS_DOWNLOADED)
 
-            #.....
             self.retry_upload_task()
             self.del_uploaded_video_file()
 
@@ -129,13 +130,14 @@ class Youkube(object):
             try:
                 self.youku.upload(
                     "%s%s.%s" % (self.config['video_dir'], util.md5encode(n.url), n.ext),
-                    n.youku_prefix + n.title, n.desc, "")
+                    n.youku_prefix + n.title, "", n.desc, n.category)
             except Exception:
                 logger.warn(u"[Youkube] - 视频上传失败!")
                 continue
 
             logger.info(u"[Youkube] - 视频 %s 上传完成！" % n.title)
             self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADED)
+            self.del_uploaded_video_file()
 
     def del_uploaded_video_file(self):
         uploaded_videps = self.repo.find_uploaded_video()
@@ -194,6 +196,7 @@ class Youkube(object):
         video.channel_name = user_info['channel_name']
         video.youku_prefix = user_info['youku_prefix']
         video.desc = user_info['desc']
+        video.category = user_info['category']
 
         self.repo.save(video)
 

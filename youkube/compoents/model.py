@@ -35,6 +35,7 @@ class Video(BaseModel):
     channel_name = peewee.CharField()        # 频道名
     youku_prefix = peewee.CharField()        # youku 上传视频前缀
     desc = peewee.CharField()                # youku  视频描述
+    category = peewee.CharField()                # youku 视频分类
 
     create_time = peewee.DateTimeField()
     update_time = peewee.DateTimeField()

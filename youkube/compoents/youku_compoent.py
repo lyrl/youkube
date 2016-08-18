@@ -32,7 +32,6 @@ categorys = [
 
 def find_category(desc):
     for i in categorys:
-        logger.info(i)
         if i['label'] == desc:
             return i['id']
     return ''

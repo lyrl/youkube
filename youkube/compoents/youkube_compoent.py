@@ -136,7 +136,8 @@ class Youkube(object):
                     n.youku_prefix + n.title, "", n.desc, n.category)
             except Exception as e:
                 logger.warn(u"[Youkube] - 视频上传失败!" + e.message)
-                continue
+                raise e
+                # continue
 
             logger.info(u"[Youkube] - 视频 %s 上传完成！" % n.title)
             self.repo.chg_status(n, constants.VIDEO_STATUS_UPLOADED)

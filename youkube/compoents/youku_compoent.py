@@ -42,18 +42,20 @@ class Youku(object):
         上传
 
         """
+        c = None
         try:
-            category = categorys[category]
+            c = categorys[category]
         except Exception:
+            logger.error("categorys[category] exception " )
             pass
 
-        logger.debug("category - %s" % category)
+        logger.debug("category - %s" % c)
 
         file_info = {
             'title': title,
             'tags': tags,
             'description': description,
-            'category': category['id']
+            'category': c['id']
         }
 
         logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))

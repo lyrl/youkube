@@ -57,8 +57,8 @@ class Youku(object):
             # 'category': find_category(category)
         }
 
-        logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))
+        logger.debug("YOUKU - file_path %s title %s tags %s description %s title length:%s" % (file_path, title, tags, description, len(title)))
+
 
         youku_upload = youku.YoukuUpload(self.client_id, self.access_token, file_path)
         youku_upload.upload(file_info)
-

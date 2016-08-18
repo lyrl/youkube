@@ -23,8 +23,7 @@ categorys = {
     "搞笑": {
         "term": "Humor",
         "label": "搞笑",
-        "lang": "zh_CN",
-
+        "lang": "zh_CN"
     }
 }
 
@@ -44,6 +43,8 @@ class Youku(object):
             category = categorys[category]
         except Exception:
             pass
+
+        logger.debug("category - %s" % category)
 
         file_info = {
             'title': title,

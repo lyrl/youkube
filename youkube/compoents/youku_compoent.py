@@ -11,16 +11,19 @@ logger = util.get_logger("YOUKU")
 
 categorys = {
     "游戏": {
+        "id": 99,
         "term": "Games",
         "label": "游戏",
         "lang": "zh_CN"
     },
     "科技": {
+        "id": 105,
         "term": "Tech",
         "label": "科技",
         "lang": "zh_CN"
     },
     "搞笑": {
+        "id": 94,
         "term": "Humor",
         "label": "搞笑",
         "lang": "zh_CN"
@@ -50,7 +53,7 @@ class Youku(object):
             'title': title,
             'tags': tags,
             'description': description,
-            'category': category['label']
+            'category': category['id']
         }
 
         logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))

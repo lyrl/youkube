@@ -150,9 +150,9 @@ class Youkube(object):
             is_exist = os.path.exists(file_paht)
 
             if is_exist:
-                logger.info(u"[Youkube] - 视频 %s 已上传成功 ! 视频文件 %s 准备删除!", (v.title, file_paht))
+                logger.info(u"[Youkube] - 视频 %s 已上传成功 ! 视频文件 %s 准备删除!" % (v.title, file_paht))
                 os.remove(file_paht)
-                logger.info(u"[Youkube] - 视频 %s  视频文件 %s 删除成功!", (v.title, file_paht))
+                logger.info(u"[Youkube] - 视频 %s  视频文件 %s 删除成功!" % (v.title, file_paht))
 
 
     def __save_new_video_info_to_db__(self, info_dict, user_info):

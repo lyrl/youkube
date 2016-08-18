@@ -9,26 +9,32 @@ import youkube.util as util
 logger = util.get_logger("YOUKU")
 
 
-categorys = {
-    u"游戏": {
+categorys = [
+     {
         "id": 99,
         "term": "Games",
         "label": "游戏",
         "lang": "zh_CN"
     },
-    u"科技": {
+    {
         "id": 105,
         "term": "Tech",
         "label": "科技",
         "lang": "zh_CN"
     },
-    u"搞笑": {
+    {
         "id": 94,
         "term": "Humor",
         "label": "搞笑",
         "lang": "zh_CN"
     }
-}
+]
+
+def find_category(desc):
+    for i in categorys:
+        if i['label'] == desc:
+            return i['id']
+    return ''
 
 class Youku(object):
 
@@ -42,20 +48,14 @@ class Youku(object):
         上传
 
         """
-        c = None
-        try:
-            c = categorys[category.encode('utf-8')]
-        except Exception:
-            logger.error("categorys[category] exception " )
-            pass
+        find_category(category)
 
-        logger.debug("category - %s" % c)
 
         file_info = {
             'title': title,
             'tags': tags,
             'description': description,
-            'category': c['id']
+            'category': find_category(category)
         }
 
         logger.debug("YOUKU - file_path %s title %s tags %s description %s" % (file_path, title, tags, description))

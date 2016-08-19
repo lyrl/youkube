@@ -27,6 +27,9 @@ class YoutubeCompoentImpl(object):
     def fetch_user_page_video_links(self, user):
         return YoutubeDl.fetch_user_page_video_links(user)
 
+    def fetch_channel_page_video_links(self, user):
+        return YoutubeDl.fetch_channel_page_video_links(user)
+
     def download(self, url, video_dir, ext, download_url):
         return YoutubeDl.download(url, video_dir, ext, download_url)
 
@@ -56,6 +59,29 @@ class YoutubeDl(object):
 
         try:
             body = urllib2.urlopen(constans.YOUTUBE_USER_BASE_URL % user).read()
+        except Exception as e:
+            logger.error("[YoutubeDl] - urllib2.urlopen error: %s" % e.__str__())
+            return []
+
+        soup = BeautifulSoup(body)
+        links = soup.findAll('a', attrs={'href': re.compile(constans.YOUTUBE_VIDEO_LINK_REGEX)})
+
+        urls = []
+
+        for i in links:
+            urls.append(constans.YOUTUBE_BASE_URL + i['href'])
+
+        return urls
+
+    @staticmethod
+    def fetch_channel_page_video_links(channel):
+        """
+        获取频道主页所有视频的连接
+        """
+        logger.debug("[YoutubeDl] - user home page url: %s" % (constans.YOUTUBE_CHANNEL_BASE_URL % channel))
+
+        try:
+            body = urllib2.urlopen(constans.YOUTUBE_CHANNEL_BASE_URL % channel).read()
         except Exception as e:
             logger.error("[YoutubeDl] - urllib2.urlopen error: %s" % e.__str__())
             return []

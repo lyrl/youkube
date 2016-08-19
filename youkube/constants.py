@@ -14,6 +14,7 @@ VIDEO_STATUS_UPLOADED = 6  # 上传成功
 
 
 YOUTUBE_USER_BASE_URL = "https://www.youtube.com/user/%s/videos"
+YOUTUBE_CHANNEL_BASE_URL = "https://www.youtube.com/channel/%s/videos"
 YOUTUBE_VIDEO_LINK_REGEX = '/watch\?v=\w+$'
 YOUTUBE_BASE_URL = "https://www.youtube.com"
 

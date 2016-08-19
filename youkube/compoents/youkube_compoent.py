@@ -72,8 +72,11 @@ class Youkube(object):
             time.sleep(60)
 
     def fetch_new_videos(self):
-        for i in self.config['users']:
-            links = self.youtube.fetch_user_page_video_links(i['user'])
+        for i in self.config['items']:
+            if i['type'] == 'user':
+                links = self.youtube.fetch_user_page_video_links(i['user'])
+            else:
+                links = self.youtube.fetch_channel_page_video_links(i['channel'])
 
             self.fetch_new_video(self.rm_dup_link(links),i)
 

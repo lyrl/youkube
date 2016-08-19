@@ -27,6 +27,12 @@ categorys = [
         "term": "Humor",
         "label": u"搞笑",
         "lang": "zh_CN"
+    },
+    {
+        "id": 104,
+        "term": "Autos",
+        "label": u"汽车",
+        "lang": "zh_CN"
     }
 ]
 

@@ -54,7 +54,12 @@ class YoutubeDl(object):
         """
         logger.debug("[YoutubeDl] - user home page url: %s" % (constans.YOUTUBE_USER_BASE_URL % user))
 
-        body = urllib2.urlopen(constans.YOUTUBE_USER_BASE_URL % user).read()
+        try:
+            body = urllib2.urlopen(constans.YOUTUBE_USER_BASE_URL % user).read()
+        except Exception as e:
+            logger.error("[YoutubeDl] - urllib2.urlopen error: %s" % e.__str__())
+            return []
+
         soup = BeautifulSoup(body)
         links = soup.findAll('a', attrs={'href': re.compile(constans.YOUTUBE_VIDEO_LINK_REGEX)})
 

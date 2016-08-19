@@ -104,12 +104,12 @@ class Youkube(object):
             # 视频基本信息的字典数据，信息由youtube-dl 提供
             info_dict = self.youtube.fetch_video_base_info(link)
             # 将视频保存到数据库
-            try:
-                video_entity = self.__save_new_video_info_to_db__(info_dict, use_info)
-            except Exception as e:
-                logger.error(u"保存失败！ reason :" + e.__str__())
-                raise e
-                continue
+            # try:
+            video_entity = self.__save_new_video_info_to_db__(info_dict, use_info)
+            # except Exception as e:
+                # logger.error(u"保存失败！ reason :" + e.__str__())
+                # raise e
+                # continue
 
             logger.debug(u"发现新视频 %s 时长 %s " % (video_entity.title, video_entity.duration))
 

@@ -78,7 +78,7 @@ class Youkube(object):
             else:
                 links = self.youtube.fetch_channel_page_video_links(i['channel'])
 
-            self.fetch_new_video(self.rm_dup_link(links),i)
+            self.fetch_new_video(self.rm_dup_link(links), i)
 
     def rm_dup_link(self, links):
         uniquelist = []
@@ -104,12 +104,11 @@ class Youkube(object):
             # 视频基本信息的字典数据，信息由youtube-dl 提供
             info_dict = self.youtube.fetch_video_base_info(link)
             # 将视频保存到数据库
-            # try:
-            video_entity = self.__save_new_video_info_to_db__(info_dict, use_info)
-            # except Exception as e:
-                # logger.error(u"保存失败！ reason :" + e.__str__())
-                # raise e
-                # continue
+            try:
+                video_entity = self.__save_new_video_info_to_db__(info_dict, use_info)
+            except Exception as e:
+                logger.error(u"保存失败！ reason :" + e.__str__())
+                continue
 
             logger.debug(u"发现新视频 %s 时长 %s " % (video_entity.title, video_entity.duration))
 
@@ -204,7 +203,11 @@ class Youkube(object):
         video.create_time = datetime.datetime.now()
         video.update_time = datetime.datetime.now()
 
-        video.user = user_info['user']
+        try:
+            video.user = user_info['user']
+        except Exception:
+            video.user = user_info['channel']
+
         video.channel_name = user_info['channel_name']
         video.youku_prefix = user_info['youku_prefix']
         video.desc = user_info['desc']
